@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Checksums\CRC32.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
