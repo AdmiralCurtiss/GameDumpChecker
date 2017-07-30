@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="Checksums\CRC32.cs" />
     <Compile Include="Checksums\Internal.cs" />
+    <Compile Include="BasicInfoProvider.cs" />
+    <Compile Include="DataSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
