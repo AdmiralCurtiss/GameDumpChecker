@@ -7,6 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDumpCheckerLib", "GameD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameDumpCheckerCli", "GameDumpCheckerCli\GameDumpCheckerCli.csproj", "{7C32B885-48AF-4B64-BC83-8D6EC4C03CE9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DiscUtils", "DiscUtils", "{64804452-2E9A-4AE2-8710-3C9A6E290E7D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscUtils.Streams", "DiscUtils\Library\DiscUtils.Streams\DiscUtils.Streams.csproj", "{AEC93AA0-6D30-4E93-ADF3-7E55E62234DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscUtils.Core", "DiscUtils\Library\DiscUtils.Core\DiscUtils.Core.csproj", "{1B24624F-73E9-40CD-8B82-88C51505CE6D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscUtils.Iso9660", "DiscUtils\Library\DiscUtils.Iso9660\DiscUtils.Iso9660.csproj", "{26B1F4D5-E42E-45CD-ADF1-A956BD830BFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +29,25 @@ Global
 		{7C32B885-48AF-4B64-BC83-8D6EC4C03CE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C32B885-48AF-4B64-BC83-8D6EC4C03CE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C32B885-48AF-4B64-BC83-8D6EC4C03CE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEC93AA0-6D30-4E93-ADF3-7E55E62234DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEC93AA0-6D30-4E93-ADF3-7E55E62234DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEC93AA0-6D30-4E93-ADF3-7E55E62234DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEC93AA0-6D30-4E93-ADF3-7E55E62234DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B24624F-73E9-40CD-8B82-88C51505CE6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B24624F-73E9-40CD-8B82-88C51505CE6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B24624F-73E9-40CD-8B82-88C51505CE6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B24624F-73E9-40CD-8B82-88C51505CE6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26B1F4D5-E42E-45CD-ADF1-A956BD830BFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26B1F4D5-E42E-45CD-ADF1-A956BD830BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26B1F4D5-E42E-45CD-ADF1-A956BD830BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26B1F4D5-E42E-45CD-ADF1-A956BD830BFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AEC93AA0-6D30-4E93-ADF3-7E55E62234DD} = {64804452-2E9A-4AE2-8710-3C9A6E290E7D}
+		{1B24624F-73E9-40CD-8B82-88C51505CE6D} = {64804452-2E9A-4AE2-8710-3C9A6E290E7D}
+		{26B1F4D5-E42E-45CD-ADF1-A956BD830BFF} = {64804452-2E9A-4AE2-8710-3C9A6E290E7D}
 	EndGlobalSection
 EndGlobal

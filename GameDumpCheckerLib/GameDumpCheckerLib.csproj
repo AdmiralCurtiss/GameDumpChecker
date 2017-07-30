@@ -49,5 +49,19 @@
     <Compile Include="StreamUtil.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DiscUtils\Library\DiscUtils.Core\DiscUtils.Core.csproj">
+      <Project>{1b24624f-73e9-40cd-8b82-88c51505ce6d}</Project>
+      <Name>DiscUtils.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DiscUtils\Library\DiscUtils.Iso9660\DiscUtils.Iso9660.csproj">
+      <Project>{26b1f4d5-e42e-45cd-adf1-a956bd830bff}</Project>
+      <Name>DiscUtils.Iso9660</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DiscUtils\Library\DiscUtils.Streams\DiscUtils.Streams.csproj">
+      <Project>{aec93aa0-6d30-4e93-adf3-7e55e62234dd}</Project>
+      <Name>DiscUtils.Streams</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
