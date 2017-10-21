@@ -20,15 +20,16 @@ namespace GameDumpCheckerLib.Readers {
 
             using ( Stream s = new FileStream( Filename, FileMode.Open ) )
             using ( CDReader iso = new CDReader( s, true ) ) {
-                List<Sfo> sfos = new List<Sfo>();
                 foreach ( string filename in iso.GetFiles( "", "PARAM.SFO", SearchOption.AllDirectories ) ) {
                     using ( Stream file = iso.OpenFile( filename, FileMode.Open ) ) {
-                        sfos.Add( new Sfo( file, filename ) );
+                        try {
+                            sections.Add( new Sfo( file, filename ).GetAsDataSection() );
+                        } catch ( InvalidSfoException ex ) {
+                            var list = new List<(string Key, string Value)>();
+                            list.Add( (Key: "Invalid SFO", Value: ex.ToString() ) );
+                            sections.Add( new DataSection( filename, list ) );
+                        }
                     }
-                }
-
-                foreach ( Sfo sfo in sfos ) {
-                    sections.Add( sfo.GetAsDataSection() );
                 }
             }
 

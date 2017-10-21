@@ -23,9 +23,10 @@ namespace GameDumpCheckerLib.PlayStation {
 
             s.Position = 0;
 
+            uint expectedMagic = 0x46535000;
             Magic = s.ReadUInt32();
-            if ( Magic != 0x46535000 ) {
-                throw new Exception( "Invalid SFO header." );
+            if ( Magic != expectedMagic ) {
+                throw new InvalidSfoException( String.Format( "Invalid SFO header: Magic bytes are 0x{0:X8} instead of 0x{1:X8}.", Magic, expectedMagic ) );
             }
 
             Version = s.ReadUInt32();
@@ -56,7 +57,7 @@ namespace GameDumpCheckerLib.PlayStation {
                     entry = new SfoEntryInt32( s, key, dataTableStart, dataLen, dataMaxLen, dataOffset );
                     break;
                 default:
-                    throw new Exception( String.Format( "Unknown SFO data format '{0:x4}'", dataFmt ) );
+                    throw new InvalidSfoException( String.Format( "Unknown SFO data format '{0:x4}'", dataFmt ) );
             }
 
             return entry;
@@ -116,7 +117,7 @@ namespace GameDumpCheckerLib.PlayStation {
 
         public SfoEntryInt32( Stream s, string key, uint dataTableStart, uint dataLen, uint dataMaxLen, uint dataOffset ) {
             if ( dataLen != 4 || dataMaxLen != 4 ) {
-                throw new Exception( "Invalid SFO data length for Int32." );
+                throw new InvalidSfoException( "Invalid SFO data length for Int32." );
             }
 
             Key = key;
@@ -137,5 +138,11 @@ namespace GameDumpCheckerLib.PlayStation {
         public override string ToString() {
             return GetKey() + ": " + GetValueAsString();
         }
+    }
+
+    public class InvalidSfoException : Exception {
+        public InvalidSfoException() : base() { }
+        public InvalidSfoException( string message ) : base( message ) { }
+        public InvalidSfoException( string message, Exception inner ) : base( message, inner ) { }
     }
 }
