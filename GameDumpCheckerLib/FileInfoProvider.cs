@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GameDumpCheckerLib {
-    public static class BasicInfoProvider {
+    public static class FileInfoProvider {
         public static DataSection GetDataForFile( string filename ) {
             var data = new List<(string Key, string Value)>();
 
@@ -20,7 +20,7 @@ namespace GameDumpCheckerLib {
                 data.Add( ("SHA512", Util.ByteArrayToHumanReadableHexString( Checksums.Internal.CalculateSHA512( s ) )) );
             }
 
-            return new DataSection( "Basic Info", data );
+            return new DataSection( "File Info", data );
         }
     }
 }

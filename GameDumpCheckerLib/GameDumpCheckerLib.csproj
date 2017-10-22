@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="Checksums\CRC32.cs" />
     <Compile Include="Checksums\Internal.cs" />
-    <Compile Include="BasicInfoProvider.cs" />
+    <Compile Include="FileInfoProvider.cs" />
     <Compile Include="DataSection.cs" />
     <Compile Include="PlayStation\Sfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

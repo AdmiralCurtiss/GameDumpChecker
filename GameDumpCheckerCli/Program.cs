@@ -18,7 +18,7 @@ namespace GameDumpCheckerCli {
             StringBuilder sb = new StringBuilder();
 
             List<DataSection> dataSections = new List<DataSection>();
-            dataSections.Add( BasicInfoProvider.GetDataForFile( filename ) );
+            dataSections.Add( FileInfoProvider.GetDataForFile( filename ) );
             dataSections.AddRange( new PspGameReader( filename ).GenerateSystemSpecificDataSections() );
 
             int keymax = 0;
