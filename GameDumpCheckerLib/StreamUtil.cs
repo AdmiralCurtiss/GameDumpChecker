@@ -236,6 +236,34 @@ namespace GameDumpCheckerLib {
             return sb.ToString();
         }
 
+        private static Encoding _ShiftJISEncoding = null;
+        public static Encoding ShiftJISEncoding { get { if ( _ShiftJISEncoding == null ) { _ShiftJISEncoding = Encoding.GetEncoding( 932 ); } return _ShiftJISEncoding; } }
+        public static string ReadShiftJis( this Stream s, int bytecount ) {
+            byte[] data = new byte[bytecount];
+            s.Read( data, 0, bytecount );
+            return ShiftJISEncoding.GetString( data );
+        }
+        public static string ReadShiftJisNullterm( this Stream s ) {
+            StringBuilder sb = new StringBuilder();
+            byte[] buffer = new byte[2];
+
+            int b = s.ReadByte();
+            while ( b != 0 && b != -1 ) {
+                if ( ( b >= 0 && b <= 0x80 ) || ( b >= 0xA0 && b <= 0xDF ) ) {
+                    // is a single byte
+                    buffer[0] = (byte)b;
+                    sb.Append( ShiftJISEncoding.GetString( buffer, 0, 1 ) );
+                } else {
+                    // is two bytes
+                    buffer[0] = (byte)b;
+                    buffer[1] = (byte)s.ReadByte();
+                    sb.Append( ShiftJISEncoding.GetString( buffer ) );
+                }
+                b = s.ReadByte();
+            }
+            return sb.ToString();
+        }
+
         public static void Write( this Stream s, byte[] data ) {
             s.Write( data, 0, data.Length );
         }
