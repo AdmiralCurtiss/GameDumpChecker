@@ -45,6 +45,7 @@
     <Compile Include="EndianUtil.cs" />
     <Compile Include="FileInfoProvider.cs" />
     <Compile Include="DataSection.cs" />
+    <Compile Include="PartialStream.cs" />
     <Compile Include="PlayStation\Sfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Readers\IGameReader.cs" />
