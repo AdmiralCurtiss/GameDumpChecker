@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameDumpCheckerLib.Readers {
     public interface IGameReader {
+        List<DataSection> GenerateManuallyFilledInfoSections();
         List<DataSection> GenerateSystemSpecificDataSections();
     }
 }

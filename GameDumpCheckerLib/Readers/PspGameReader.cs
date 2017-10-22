@@ -15,6 +15,10 @@ namespace GameDumpCheckerLib.Readers {
             this.Filename = filename;
         }
 
+        public List<DataSection> GenerateManuallyFilledInfoSections() {
+            return new List<DataSection>();
+        }
+
         public List<DataSection> GenerateSystemSpecificDataSections() {
             List<DataSection> sections = new List<DataSection>();
 
