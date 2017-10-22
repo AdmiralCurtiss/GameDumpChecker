@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Checksums\CRC32.cs" />
     <Compile Include="Checksums\Internal.cs" />
+    <Compile Include="EndianUtil.cs" />
     <Compile Include="FileInfoProvider.cs" />
     <Compile Include="DataSection.cs" />
     <Compile Include="PlayStation\Sfo.cs" />
