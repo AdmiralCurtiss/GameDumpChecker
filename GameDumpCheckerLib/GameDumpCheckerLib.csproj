@@ -45,6 +45,7 @@
     <Compile Include="EndianUtil.cs" />
     <Compile Include="FileInfoProvider.cs" />
     <Compile Include="DataSection.cs" />
+    <Compile Include="Gamecube\Banner.cs" />
     <Compile Include="Gamecube\DiskHeader.cs" />
     <Compile Include="Gamecube\DiskHeaderInformation.cs" />
     <Compile Include="Gamecube\Fst.cs" />
