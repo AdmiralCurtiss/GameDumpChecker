@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 namespace GameDumpCheckerLib.Gamecube {
     public class Banner {
         // http://hitmen.c02.at/files/yagcd/yagcd/chap14.html#sec14.1
+        public String Magic { get; private set; }
         public List<BannerMetadata> Metadata { get; private set; }
 
         public Banner( Stream stream, bool parseAsShiftJis ) {
             stream.Position = 0;
-            String magic = stream.ReadAscii( 4 );
+            Magic = stream.ReadAscii( 4 );
 
-            if ( magic != "BNR1" && magic != "BNR2" ) {
+            if ( Magic != "BNR1" && Magic != "BNR2" ) {
                 throw new Exception( "Invalid magic." );
             }
 
@@ -43,11 +44,11 @@ namespace GameDumpCheckerLib.Gamecube {
                 PublisherLong = stream.ReadShiftJis( 0x40 );
                 Description = stream.ReadShiftJis( 0x80 );
             } else {
-                GameName = stream.ReadAscii( 0x20 );
-                Publisher = stream.ReadAscii( 0x20 );
-                GameNameLong = stream.ReadAscii( 0x40 );
-                PublisherLong = stream.ReadAscii( 0x40 );
-                Description = stream.ReadAscii( 0x80 );
+                GameName = stream.ReadAscii( 0x20 ).Replace( '\u0099', '™' );
+                Publisher = stream.ReadAscii( 0x20 ).Replace( '\u0099', '™' );
+                GameNameLong = stream.ReadAscii( 0x40 ).Replace( '\u0099', '™' );
+                PublisherLong = stream.ReadAscii( 0x40 ).Replace( '\u0099', '™' );
+                Description = stream.ReadAscii( 0x80 ).Replace( '\u0099', '™' );
             }
         }
     }

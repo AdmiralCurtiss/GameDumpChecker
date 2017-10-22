@@ -33,6 +33,7 @@ namespace GameDumpCheckerLib.Gamecube {
         String Filename { get; }
 
         FstEntry GetChild( String filename );
+        List<FstEntry> GetChildren();
     }
 
     public class FstRootDirectoryEntry : FstEntry {
@@ -68,6 +69,10 @@ namespace GameDumpCheckerLib.Gamecube {
                 }
             }
             return null;
+        }
+
+        public List<FstEntry> GetChildren() {
+            return Children;
         }
 
         public override string ToString() {
@@ -122,6 +127,10 @@ namespace GameDumpCheckerLib.Gamecube {
             return null;
         }
 
+        public List<FstEntry> GetChildren() {
+            return Children;
+        }
+
         public override string ToString() {
             return Filename;
         }
@@ -144,6 +153,10 @@ namespace GameDumpCheckerLib.Gamecube {
 
         public FstEntry GetChild( string filename ) {
             return null;
+        }
+
+        public List<FstEntry> GetChildren() {
+            return new List<FstEntry>();
         }
 
         public override string ToString() {
