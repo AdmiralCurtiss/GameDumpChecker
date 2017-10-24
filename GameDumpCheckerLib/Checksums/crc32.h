@@ -2,7 +2,7 @@
  * \file crc32.h
  * Functions and types for CRC checks.
  *
- * Generated on Sun Jul 30 12:03:50 2017,
+ * Generated on Tue Oct 24 23:55:09 2017,
  * by pycrc v0.9, https://pycrc.org
  * using the configuration:
  *    Width         = 32
@@ -11,7 +11,8 @@
  *    ReflectIn     = True
  *    Xor_Out       = 0xffffffff
  *    ReflectOut    = True
- *    Algorithm     = bit-by-bit-fast
+ *    Algorithm     = table-driven
+ *    SliceBy       = 16
  *****************************************************************************/
 #ifndef __CRC32_H__
 #define __CRC32_H__
@@ -30,7 +31,7 @@ extern "C" {
  * This is not used anywhere in the generated code, but it may be used by the
  * application code to call algoritm-specific code, is desired.
  *****************************************************************************/
-#define CRC_ALGO_BIT_BY_BIT_FAST 1
+#define CRC_ALGO_TABLE_DRIVEN 1
 
 
 /**
@@ -39,16 +40,6 @@ extern "C" {
  * This type must be big enough to contain at least 32 bits.
  *****************************************************************************/
 typedef uint_fast32_t crc_t;
-
-
-/**
- * Reflect all bits of a \a data word of \a data_len bytes.
- *
- * \param data         The data word to be reflected.
- * \param data_len     The width of \a data expressed in number of bits.
- * \return             The reflected data.
- *****************************************************************************/
-crc_t crc_reflect(crc_t data, size_t data_len);
 
 
 /**
@@ -81,7 +72,7 @@ crc_t crc_update(crc_t crc, const void *data, size_t data_len);
  *****************************************************************************/
 static inline crc_t crc_finalize(crc_t crc)
 {
-    return crc_reflect(crc, 32) ^ 0xffffffff;
+    return crc ^ 0xffffffff;
 }
 
 
