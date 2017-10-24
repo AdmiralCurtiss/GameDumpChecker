@@ -45,6 +45,7 @@
     <Compile Include="EndianUtil.cs" />
     <Compile Include="FileInfoProvider.cs" />
     <Compile Include="DataSection.cs" />
+    <Compile Include="Readers\FileType.cs" />
     <Compile Include="Gamecube\Banner.cs" />
     <Compile Include="Gamecube\DiskHeader.cs" />
     <Compile Include="Gamecube\DiskHeaderInformation.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="PlayStation\Sfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Readers\GamecubeGameReader.cs" />
+    <Compile Include="Readers\GameReaderFactory.cs" />
     <Compile Include="Readers\IGameReader.cs" />
     <Compile Include="Readers\PspGameReader.cs" />
     <Compile Include="StreamUtil.cs" />
