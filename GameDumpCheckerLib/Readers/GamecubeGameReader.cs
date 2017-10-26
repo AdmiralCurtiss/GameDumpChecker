@@ -58,11 +58,11 @@ namespace GameDumpCheckerLib.Readers {
                     break;
             }
 
-            info.Add( ("Region", region) );
-            info.Add( ("Languages", languages) );
-            info.Add( ("Language Select", "Uses System Language / In-Game Language Select / Unknown") );
-            info.Add( ("Disc Serial", serial) );
-            info.Add( ("Edition", "Original / Unknown") );
+            info.Add( ("Region", "Unknown / " + region) );
+            info.Add( ("Languages", "Unknown / " + languages) );
+            info.Add( ("Language Select", "Unknown / Uses System Language / In-Game Language Select") );
+            info.Add( ("Disc Serial", "Unknown / " + serial) );
+            info.Add( ("Edition", "Unknown / Original") );
             info.Add( ("Case Barcode", "Unknown") );
             info.Add( ("Case Serial", "Unknown") );
             info.Add( ("Mastering Code (back)", "Unknown") );
