@@ -12,6 +12,8 @@ namespace GameDumpCheckerLib.Readers {
                     return new PspGameReader( filename );
                 case FileType.GCN:
                     return new GamecubeGameReader( filename );
+                case FileType.N3DS:
+                    return new N3DSGameReader( filename );
             }
 
             throw new Exception( "Invalid FileType: " + type );

@@ -9,5 +9,6 @@ namespace GameDumpCheckerLib {
         Unknown,
         PSP,
         GCN,
+        N3DS,
     }
 }

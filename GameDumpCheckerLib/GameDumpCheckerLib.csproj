@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="N3DS\NcchReader.cs" />
+    <Compile Include="N3DS\NcsdReader.cs" />
     <Compile Include="Checksums\CRC32.cs" />
     <Compile Include="Checksums\Internal.cs" />
     <Compile Include="EndianUtil.cs" />
@@ -57,6 +59,7 @@
     <Compile Include="Readers\GamecubeGameReader.cs" />
     <Compile Include="Readers\GameReaderFactory.cs" />
     <Compile Include="Readers\IGameReader.cs" />
+    <Compile Include="Readers\N3DSGameReader.cs" />
     <Compile Include="Readers\PspGameReader.cs" />
     <Compile Include="StreamUtil.cs" />
     <Compile Include="Util.cs" />
