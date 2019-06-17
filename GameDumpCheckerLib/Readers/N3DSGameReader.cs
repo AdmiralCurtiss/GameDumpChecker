@@ -31,15 +31,17 @@ namespace GameDumpCheckerLib.Readers {
 				sections.Add( new DataSection( "Game Data (NCSD Header)", gameData ) );
 			}
 
-			{
-				var ncch = CCI.Partitions[0];
-				var gameData = new List<(string Key, string Value)>();
-				gameData.Add( ("Content Size", ( ncch.ContentSize * CCI.MediaunitSize ).ToString( "D" ) + " bytes") );
-				gameData.Add( ("Title ID", ncch.TitleId.ToString( "X16" )) );
-				gameData.Add( ("Maker Code", ncch.MakerCode) );
-				gameData.Add( ("Version", ncch.Version.ToString( "D" )) );
-				gameData.Add( ("Product Code", ncch.ProductCode.TrimEnd( '\0' )) );
-				sections.Add( new DataSection( "Game Data (NCCH Header)", gameData ) );
+			for ( int i = 0; i < CCI.Partitions.Length; ++i ) {
+				NcchReader ncch = CCI.Partitions[i];
+				if ( ncch != null ) {
+					var gameData = new List<(string Key, string Value)>();
+					gameData.Add( ("Content Size", ( ncch.ContentSize * CCI.MediaunitSize ).ToString( "D" ) + " bytes") );
+					gameData.Add( ("Title ID", ncch.TitleId.ToString( "X16" )) );
+					//gameData.Add( ("Maker Code", ncch.MakerCode) );
+					//gameData.Add( ("Version", ncch.Version.ToString( "D" )) );
+					gameData.Add( ("Product Code", ncch.ProductCode.TrimEnd( '\0' )) );
+					sections.Add( new DataSection( "Game Data (NCCH Header / Partition " + i + ")", gameData ) );
+				}
 			}
 
 			return sections;
