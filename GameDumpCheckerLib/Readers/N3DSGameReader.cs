@@ -8,7 +8,7 @@ namespace GameDumpCheckerLib.Readers {
 	public class N3DSGameReader : IGameReader {
 		private static KeyProvider Keys = new KeyProvider();
 		private string Filename;
-		private NcsdReader CCI;
+		public NcsdReader CCI;
 
 		public N3DSGameReader( string filename ) {
 			Filename = filename;

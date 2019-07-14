@@ -45,7 +45,7 @@ namespace GameDumpCheckerCli {
             }
 
             foreach ( string arg in freeArgs ) {
-                System.IO.File.WriteAllText( arg + ".info.txt", GetInfoAsString( config, arg ) );
+                WriteInfo( config, arg );
             }
 
             return 0;
@@ -59,13 +59,13 @@ namespace GameDumpCheckerCli {
             Console.WriteLine();
         }
 
-        static string GetInfoAsString( Config config, string filename ) {
+        static void WriteInfo( Config config, string filename ) {
             StringBuilder sb = new StringBuilder();
 
             List<DataSection> dataSections = new List<DataSection>();
-            dataSections.Add( FileInfoProvider.GetDataForFile( filename ) );
             Console.WriteLine( "Parsing game data of " + filename + " with type " + config.FileType );
             IGameReader reader = GameReaderFactory.ConstructFromType( config.FileType, filename );
+            dataSections.Add( FileInfoProvider.GetDataForFile( filename ) );
             dataSections.AddRange( reader.GenerateManuallyFilledInfoSections() );
             dataSections.AddRange( reader.GenerateSystemSpecificDataSections() );
 
@@ -99,7 +99,19 @@ namespace GameDumpCheckerCli {
                 sb.AppendLine();
             }
 
-            return sb.ToString();
-        }
+			System.IO.File.WriteAllText( filename + ".info.txt", sb.ToString() );
+			if ( reader is N3DSGameReader ) {
+				var CCI = ( reader as N3DSGameReader ).CCI;
+				for ( int i = 0; i < CCI.Partitions.Length; ++i ) {
+					var ncch = CCI.Partitions[i];
+					if ( ncch != null ) {
+						if ( ncch.ExeFs != null ) {
+							ncch.ExeFs.Icon.SmallIcon.ConvertToBitmap().Save( filename + ".icon" + i + "-small.png" );
+							ncch.ExeFs.Icon.LargeIcon.ConvertToBitmap().Save( filename + ".icon" + i + "-large.png" );
+						}
+					}
+				}
+			}
+		}
     }
 }
