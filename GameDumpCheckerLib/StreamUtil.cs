@@ -138,6 +138,12 @@ namespace GameDumpCheckerLib {
             return retval;
         }
 
+		public static byte[] ReadBytes( this Stream stream, long count ) {
+			byte[] sd = new byte[count];
+			stream.Read( sd, 0, sd.Length );
+			return sd;
+		}
+
         public static void DiscardBytes( this Stream s, uint count ) {
             s.Position = s.Position + count;
         }

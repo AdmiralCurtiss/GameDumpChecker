@@ -82,7 +82,7 @@ namespace GameDumpCheckerCli {
             foreach ( DataSection ds in dataSections ) {
                 sb.Append( " === " );
                 sb.Append( ds.Name );
-                sb.Append( " ".PadRight( ( keymax + 2 + valuemax ) - 6 - ds.Name.Length, '=' ) );
+                sb.Append( " ".PadRight( Math.Max( 3, ( keymax + 2 + valuemax ) - 6 - ds.Name.Length ), '=' ) );
                 sb.AppendLine();
 
                 foreach ( var e in ds.Data ) {

@@ -6,13 +6,14 @@ using System.IO;
 
 namespace GameDumpCheckerLib.Readers {
 	public class N3DSGameReader : IGameReader {
+		private static KeyProvider Keys = new KeyProvider();
 		private string Filename;
 		private NcsdReader CCI;
 
 		public N3DSGameReader( string filename ) {
 			Filename = filename;
 			using ( var stream = new FileStream( Filename, FileMode.Open ) ) {
-				CCI = new NcsdReader( stream );
+				CCI = new NcsdReader( stream, Keys );
 			}
 		}
 
@@ -37,9 +38,17 @@ namespace GameDumpCheckerLib.Readers {
 					var gameData = new List<(string Key, string Value)>();
 					gameData.Add( ("Content Size", ( ncch.ContentSize * CCI.MediaunitSize ).ToString( "D" ) + " bytes") );
 					gameData.Add( ("Title ID", ncch.TitleId.ToString( "X16" )) );
-					//gameData.Add( ("Maker Code", ncch.MakerCode) );
-					//gameData.Add( ("Version", ncch.Version.ToString( "D" )) );
 					gameData.Add( ("Product Code", ncch.ProductCode.TrimEnd( '\0' )) );
+					if ( ncch.ExeFs != null ) {
+						for ( int j = 0; j < 16; ++j ) {
+							var ts = ncch.ExeFs.Icon.TitleStructs[j];
+							if ( ts.ShortDescription != "" || ts.LongDescription != "" || ts.Publisher != "" ) {
+								gameData.Add( ("Short Name (#" + j + ")", ts.ShortDescription) );
+								gameData.Add( ("Long Name (#" + j + ")", ts.LongDescription) );
+								gameData.Add( ("Publisher (#" + j + ")", ts.Publisher) );
+							}
+						}
+					}
 					sections.Add( new DataSection( "Game Data (NCCH Header / Partition " + i + ")", gameData ) );
 				}
 			}

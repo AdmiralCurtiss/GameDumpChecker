@@ -25,7 +25,7 @@ namespace GameDumpCheckerLib.N3DS {
 			}
 		}
 
-		public NcsdReader( Stream stream ) {
+		public NcsdReader( Stream stream, KeyProvider keys ) {
 			stream.Position = 0x100;
 			if ( stream.ReadAscii( 4 ) != "NCSD" ) {
 				throw new Exception( "wrong magic for 3DS" );
@@ -52,7 +52,7 @@ namespace GameDumpCheckerLib.N3DS {
 			Partitions = new NcchReader[8];
 			for ( int i = 0; i < 8; ++i ) {
 				if ( PartitionGeometry[i].Size > 0 ) {
-					Partitions[i] = new NcchReader( stream, PartitionGeometry[i].Offset * MediaunitSize, this );
+					Partitions[i] = new NcchReader( stream, PartitionGeometry[i].Offset * MediaunitSize, this, keys );
 				}
 			}
 
