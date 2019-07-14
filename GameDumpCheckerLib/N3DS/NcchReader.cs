@@ -28,6 +28,7 @@ namespace GameDumpCheckerLib.N3DS {
 		public byte[] Key0;
 		public byte[] Key1;
 
+		public ExHeaderReader ExHeader;
 		public ExeFsReader ExeFs;
 
 		public NcchReader( Stream stream, long offset, NcsdReader ncsd, KeyProvider keys ) {
@@ -68,6 +69,7 @@ namespace GameDumpCheckerLib.N3DS {
 			stream.DiscardBytes( 0x20 );
 			stream.DiscardBytes( 0x20 );
 
+			long exheaderOffset = offset + 0x200;
 			long exeFsOffset = offset + ExeFsOffset * ncsd.MediaunitSize;
 			EncryptionType encryption;
 
@@ -107,6 +109,11 @@ namespace GameDumpCheckerLib.N3DS {
 				}
 			} else {
 				encryption = EncryptionType.None;
+			}
+
+			if ( ExtendedHeaderSize > 0 ) {
+				byte[] exheaderCounter = GetCounter( 1, ncsd.MediaunitSize );
+				ExHeader = new ExHeaderReader( stream, exheaderOffset, ncsd, this, keys, encryption, exheaderCounter );
 			}
 
 			if ( ExeFsSize > 0 ) {

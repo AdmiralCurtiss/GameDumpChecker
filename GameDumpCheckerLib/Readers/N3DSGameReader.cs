@@ -39,6 +39,9 @@ namespace GameDumpCheckerLib.Readers {
 					gameData.Add( ("Content Size", ( ncch.ContentSize * CCI.MediaunitSize ).ToString( "D" ) + " bytes") );
 					gameData.Add( ("Title ID", ncch.TitleId.ToString( "X16" )) );
 					gameData.Add( ("Product Code", ncch.ProductCode.TrimEnd( '\0' )) );
+					if ( ncch.ExHeader != null ) {
+						gameData.Add( ("Name (ExHeader)", ncch.ExHeader.Title) );
+					}
 					if ( ncch.ExeFs != null ) {
 						for ( int j = 0; j < 16; ++j ) {
 							var ts = ncch.ExeFs.Icon.TitleStructs[j];

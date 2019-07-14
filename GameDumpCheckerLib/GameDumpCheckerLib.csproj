@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="N3DS\Encryption.cs" />
     <Compile Include="N3DS\ExeFsReader.cs" />
+    <Compile Include="N3DS\ExHeaderReader.cs" />
     <Compile Include="N3DS\KeyProvider.cs" />
     <Compile Include="N3DS\NcchReader.cs" />
     <Compile Include="N3DS\NcsdReader.cs" />
