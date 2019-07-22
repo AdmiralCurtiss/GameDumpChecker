@@ -1,3 +1,6 @@
 [submodule "DiscUtils"]
 	path = DiscUtils
 	url = https://github.com/DiscUtils/DiscUtils.git
+[submodule "HyoutaUtils"]
+	path = HyoutaUtils
+	url = https://github.com/AdmiralCurtiss/HyoutaUtils.git

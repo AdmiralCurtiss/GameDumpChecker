@@ -47,7 +47,7 @@ namespace GameDumpCheckerLib.N3DS {
 			ctr[1] = BitConverter.ToUInt32( counter, 8 );
 			ctr[0] = BitConverter.ToUInt32( counter, 12 );
 			for ( uint i = 0; i < 4; ++i ) {
-				ctr[i] = EndianUtil.SwapEndian( ctr[i] );
+				ctr[i] = HyoutaUtils.EndianUtils.SwapEndian( ctr[i] );
 			}
 
 			for ( uint i = 0; i < 4; i++ ) {
@@ -65,7 +65,7 @@ namespace GameDumpCheckerLib.N3DS {
 			}
 
 			for ( uint i = 0; i < 4; ++i ) {
-				ctr[i] = EndianUtil.SwapEndian( ctr[i] );
+				ctr[i] = HyoutaUtils.EndianUtils.SwapEndian( ctr[i] );
 			}
 			Array.Copy( BitConverter.GetBytes( ctr[3] ), 0, counter, 0, 4 );
 			Array.Copy( BitConverter.GetBytes( ctr[2] ), 0, counter, 4, 4 );

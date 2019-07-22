@@ -35,16 +35,16 @@ namespace GameDumpCheckerLib.N3DS {
 					string[] split = line.Split( '=' );
 					if ( split.Length == 2 ) {
 						switch ( split[0].Trim() ) {
-							case "slot0x2CKeyX": _slot0x2CKeyX = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
-							case "slot0x25KeyX": _slot0x25KeyX = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
-							case "slot0x18KeyX": _slot0x18KeyX = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
-							case "slot0x1BKeyX": _slot0x1BKeyX = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
-							case "common0": _common0 = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
-							case "common1": _common1 = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
-							case "common2": _common2 = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
-							case "common3": _common3 = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
-							case "common4": _common4 = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
-							case "common5": _common5 = Util.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "slot0x2CKeyX": _slot0x2CKeyX = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "slot0x25KeyX": _slot0x25KeyX = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "slot0x18KeyX": _slot0x18KeyX = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "slot0x1BKeyX": _slot0x1BKeyX = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "common0": _common0 = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "common1": _common1 = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "common2": _common2 = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "common3": _common3 = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "common4": _common4 = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
+							case "common5": _common5 = HyoutaUtils.HexUtils.HumanReadableHexStringToByteArray( split[1].Trim() ); break;
 							default: Console.WriteLine( "Don't know what key " + split[0] + " is." ); break;
 						}
 					}

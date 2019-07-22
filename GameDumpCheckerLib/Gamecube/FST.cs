@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HyoutaUtils;
 
 namespace GameDumpCheckerLib.Gamecube {
     // http://hitmen.c02.at/files/yagcd/yagcd/chap13.html#sec13.4

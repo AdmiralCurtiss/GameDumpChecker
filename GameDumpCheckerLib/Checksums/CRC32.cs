@@ -20,6 +20,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using HyoutaUtils;
 
 namespace GameDumpCheckerLib.Checksums {
     public static class CRC32 {

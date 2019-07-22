@@ -49,7 +49,6 @@
     <Compile Include="N3DS\NcsdReader.cs" />
     <Compile Include="Checksums\CRC32.cs" />
     <Compile Include="Checksums\Internal.cs" />
-    <Compile Include="EndianUtil.cs" />
     <Compile Include="FileInfoProvider.cs" />
     <Compile Include="DataSection.cs" />
     <Compile Include="N3DS\SmdhReader.cs" />
@@ -67,7 +66,6 @@
     <Compile Include="Readers\IGameReader.cs" />
     <Compile Include="Readers\N3DSGameReader.cs" />
     <Compile Include="Readers\PspGameReader.cs" />
-    <Compile Include="StreamUtil.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +80,14 @@
     <ProjectReference Include="..\DiscUtils\Library\DiscUtils.Streams\DiscUtils.Streams.csproj">
       <Project>{aec93aa0-6d30-4e93-adf3-7e55e62234dd}</Project>
       <Name>DiscUtils.Streams</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HyoutaUtils\HyoutaPluginBase\HyoutaPluginBase.csproj">
+      <Project>{6e153ce7-05b9-4eba-8de8-ad842214f60b}</Project>
+      <Name>HyoutaPluginBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HyoutaUtils\HyoutaUtils\HyoutaUtils.csproj">
+      <Project>{771553c8-0c50-411f-ab7f-e47553c81587}</Project>
+      <Name>HyoutaUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
