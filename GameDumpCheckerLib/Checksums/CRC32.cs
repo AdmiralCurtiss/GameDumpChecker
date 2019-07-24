@@ -592,95 +592,50 @@ namespace GameDumpCheckerLib.Checksums {
          * \return         The updated crc value.
          *****************************************************************************/
         private static uint crc_update( uint crc, Stream data, ulong data_len ) {
-            /*
-            Stream d = data;
-            uint i;
-            bool bit;
-            byte c;
-
-            while ( ( data_len-- ) != 0 ) {
-                c = (byte)d.ReadByte();
-                for ( i = 0x01; ( i & 0xff ) != 0; i <<= 1 ) {
-                    bit = ( crc & 0x80000000 ) != 0;
-                    if ( ( c & i ) != 0 ) {
-                        bit = !bit;
-                    }
-                    crc <<= 1;
-                    if ( bit ) {
-                        crc ^= 0x04c11db7;
-                    }
-                }
-                crc &= 0xffffffff;
-            }
-            return crc & 0xffffffff;
-            */
-
-            Stream d = data;
             uint tbl_idx;
+            byte[] buffer = new byte[0x1000];
+            ulong remainingBytes = data_len;
+            while ( true ) {
+                int bytesRead = data.Read( buffer, 0, 0x1000 );
+                int bufferPos = 0;
+                while ( bytesRead >= 16 ) {
+                    uint d1 = ( (uint)( buffer[bufferPos + 3] << 24 | buffer[bufferPos + 2] << 16 | buffer[bufferPos + 1] << 8 | buffer[bufferPos] ) ) ^ crc;
+                    crc  =
+                        crc_table[( 0 * 256) + ((buffer[bufferPos + 15]))] ^
+                        crc_table[( 1 * 256) + ((buffer[bufferPos + 14]))] ^
+                        crc_table[( 2 * 256) + ((buffer[bufferPos + 13]))] ^
+                        crc_table[( 3 * 256) + ((buffer[bufferPos + 12]))] ^
+                        crc_table[( 4 * 256) + ((buffer[bufferPos + 11]))] ^
+                        crc_table[( 5 * 256) + ((buffer[bufferPos + 10]))] ^
+                        crc_table[( 6 * 256) + ((buffer[bufferPos +  9]))] ^
+                        crc_table[( 7 * 256) + ((buffer[bufferPos +  8]))] ^
+                        crc_table[( 8 * 256) + ((buffer[bufferPos +  7]))] ^
+                        crc_table[( 9 * 256) + ((buffer[bufferPos +  6]))] ^
+                        crc_table[(10 * 256) + ((buffer[bufferPos +  5]))] ^
+                        crc_table[(11 * 256) + ((buffer[bufferPos +  4]))] ^
+                        crc_table[(12 * 256) + ((d1 >> 24) & 0xffu)] ^
+                        crc_table[(13 * 256) + ((d1 >> 16) & 0xffu)] ^
+                        crc_table[(14 * 256) + ((d1 >>  8) & 0xffu)] ^
+                        crc_table[(15 * 256) + ( d1        & 0xffu)];
 
-            Stream d32 = d;
-            while ( data_len >= 16 ) {
-                // realistically not going to happen, let's be honest...
-                /*
-                #if __BYTE_ORDER == __BIG_ENDIAN
-                        crc_t d1 = *d32++ ^ le16toh(crc);
-                        crc_t d2 = *d32++;
-                        crc_t d3 = *d32++;
-                        crc_t d4 = *d32++;
-                        crc  =
-                            crc_table[ 0][ d4        & 0xffu] ^
-                            crc_table[ 1][(d4 >>  8) & 0xffu] ^
-                            crc_table[ 2][(d4 >> 16) & 0xffu] ^
-                            crc_table[ 3][(d4 >> 24) & 0xffu] ^
-                            crc_table[ 4][ d3        & 0xffu] ^
-                            crc_table[ 5][(d3 >>  8) & 0xffu] ^
-                            crc_table[ 6][(d3 >> 16) & 0xffu] ^
-                            crc_table[ 7][(d3 >> 24) & 0xffu] ^
-                            crc_table[ 8][ d2        & 0xffu] ^
-                            crc_table[ 9][(d2 >>  8) & 0xffu] ^
-                            crc_table[10][(d2 >> 16) & 0xffu] ^
-                            crc_table[11][(d2 >> 24) & 0xffu] ^
-                            crc_table[12][ d1        & 0xffu] ^
-                            crc_table[13][(d1 >>  8) & 0xffu] ^
-                            crc_table[14][(d1 >> 16) & 0xffu] ^
-                            crc_table[15][(d1 >> 24) & 0xffu];
-                #else
-                */
-                uint d1 = d32.ReadUInt32() ^ crc;
-                uint d2 = d32.ReadUInt32();
-                uint d3 = d32.ReadUInt32();
-                uint d4 = d32.ReadUInt32();
-                crc  =
-                    crc_table[( 0 * 256) + ((d4 >> 24) & 0xffu)] ^
-                    crc_table[( 1 * 256) + ((d4 >> 16) & 0xffu)] ^
-                    crc_table[( 2 * 256) + ((d4 >>  8) & 0xffu)] ^
-                    crc_table[( 3 * 256) + ( d4        & 0xffu)] ^
-                    crc_table[( 4 * 256) + ((d3 >> 24) & 0xffu)] ^
-                    crc_table[( 5 * 256) + ((d3 >> 16) & 0xffu)] ^
-                    crc_table[( 6 * 256) + ((d3 >>  8) & 0xffu)] ^
-                    crc_table[( 7 * 256) + ( d3        & 0xffu)] ^
-                    crc_table[( 8 * 256) + ((d2 >> 24) & 0xffu)] ^
-                    crc_table[( 9 * 256) + ((d2 >> 16) & 0xffu)] ^
-                    crc_table[(10 * 256) + ((d2 >>  8) & 0xffu)] ^
-                    crc_table[(11 * 256) + ( d2        & 0xffu)] ^
-                    crc_table[(12 * 256) + ((d1 >> 24) & 0xffu)] ^
-                    crc_table[(13 * 256) + ((d1 >> 16) & 0xffu)] ^
-                    crc_table[(14 * 256) + ((d1 >>  8) & 0xffu)] ^
-                    crc_table[(15 * 256) + ( d1        & 0xffu)];
-                /*
-                #endif
-                */
+                    bytesRead -= 16;
+                    remainingBytes -= 16;
+                    bufferPos += 16;
+                }
 
-                data_len -= 16;
+                /* Remaining bytes with the standard algorithm */
+                while ( bytesRead > 0 ) {
+                    tbl_idx = ( crc ^ (uint)(buffer[bufferPos]) ) & 0xff;
+                    crc = ( crc_table[tbl_idx] ^ ( crc >> 8 ) ) & 0xffffffff;
+                    --bytesRead;
+                    --remainingBytes;
+                    ++bufferPos;
+                }
+
+                if ( remainingBytes == 0 ) {
+                    return crc & 0xffffffff;
+                }
             }
-
-            /* Remaining bytes with the standard algorithm */
-            d = d32;
-            while ( ( data_len-- ) != 0 ) {
-                tbl_idx = ( crc ^ (uint)d.ReadByte() ) & 0xff;
-                crc = ( crc_table[tbl_idx] ^ ( crc >> 8 ) ) & 0xffffffff;
-            }
-            return crc & 0xffffffff;
         }
 
         /**
