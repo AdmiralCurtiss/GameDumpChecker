@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using HyoutaPluginBase;
 
 namespace GameDumpCheckerLib.N3DS {
 	public class ExeFsReader {
@@ -14,11 +12,14 @@ namespace GameDumpCheckerLib.N3DS {
 			public byte[] Hash;
 		}
 
+		public DuplicatableStream Stream;
+
 		public ExeFsSection[] Sections = new ExeFsSection[8];
 		public SmdhReader Icon;
 
-		public ExeFsReader( Stream stream, long offset, NcsdReader ncsd, NcchReader ncch, KeyProvider keys, NcchReader.EncryptionType encryption, byte[] counter ) {
-			stream.Position = offset;
+		public ExeFsReader( DuplicatableStream stream, NcsdReader ncsd, NcchReader ncch, KeyProvider keys, NcchReader.EncryptionType encryption, byte[] counter ) {
+			Stream = stream.Duplicate();
+
 			var data = new byte[0x200];
 			stream.Read( data, 0, data.Length );
 
@@ -36,16 +37,16 @@ namespace GameDumpCheckerLib.N3DS {
 				Array.Copy( data, 0x100 + ( 7 - i ) * 0x20, Sections[i].Hash, 0, 0x20 );
 
 				if ( Sections[i].Name == "icon" ) {
-					var bytes = ExtractFile( stream, offset, Sections[i], ncch, encryption, counter );
+					var bytes = ExtractFile( stream, Sections[i], ncch, encryption, counter );
 					Icon = new SmdhReader( new MemoryStream( bytes ) );
 				}
 			}
 		}
 
-		public byte[] ExtractFile( Stream stream, long exeFsOffset, ExeFsSection section, NcchReader ncch, NcchReader.EncryptionType encryption, byte[] initialCounter ) {
+		public byte[] ExtractFile( Stream stream, ExeFsSection section, NcchReader ncch, NcchReader.EncryptionType encryption, byte[] initialCounter ) {
 			uint offsetInExefs = section.Offset + 0x200;
 			byte[] data = new byte[section.Size];
-			stream.Position = exeFsOffset + offsetInExefs;
+			stream.Position = offsetInExefs;
 			stream.Read( data, 0, data.Length );
 
 			if ( encryption != NcchReader.EncryptionType.None ) {

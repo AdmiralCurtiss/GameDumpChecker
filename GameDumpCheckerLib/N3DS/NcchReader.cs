@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HyoutaPluginBase;
 using HyoutaUtils;
+using HyoutaUtils.Streams;
 
 namespace GameDumpCheckerLib.N3DS {
 	public class NcchReader {
@@ -13,6 +10,8 @@ namespace GameDumpCheckerLib.N3DS {
 			Fixed,
 			Secure,
 		}
+
+		public DuplicatableStream Stream;
 
 		public byte[] Signature;
 		public uint ContentSize;
@@ -32,8 +31,8 @@ namespace GameDumpCheckerLib.N3DS {
 		public ExHeaderReader ExHeader;
 		public ExeFsReader ExeFs;
 
-		public NcchReader( Stream stream, long offset, NcsdReader ncsd, KeyProvider keys ) {
-			stream.Position = offset;
+		public NcchReader( DuplicatableStream stream, NcsdReader ncsd, KeyProvider keys ) {
+			Stream = stream.Duplicate();
 
 			Signature = new byte[0x100];
 			stream.Read( Signature, 0, Signature.Length );
@@ -70,8 +69,8 @@ namespace GameDumpCheckerLib.N3DS {
 			stream.DiscardBytes( 0x20 );
 			stream.DiscardBytes( 0x20 );
 
-			long exheaderOffset = offset + 0x200;
-			long exeFsOffset = offset + ExeFsOffset * ncsd.MediaunitSize;
+			long exheaderOffset = 0x200;
+			long exeFsOffset = ExeFsOffset * ncsd.MediaunitSize;
 			EncryptionType encryption;
 
 			bool isEncrypted = ( Flags & 4 ) == 0;
@@ -113,13 +112,17 @@ namespace GameDumpCheckerLib.N3DS {
 			}
 
 			if ( ExtendedHeaderSize > 0 ) {
-				byte[] exheaderCounter = GetCounter( 1, ncsd.MediaunitSize );
-				ExHeader = new ExHeaderReader( stream, exheaderOffset, ncsd, this, keys, encryption, exheaderCounter );
+				using ( DuplicatableStream exHeaderStream = new PartialStream( Stream, exheaderOffset, ExtendedHeaderSize ) ) {
+					byte[] exheaderCounter = GetCounter( 1, ncsd.MediaunitSize );
+					ExHeader = new ExHeaderReader( exHeaderStream, ncsd, this, keys, encryption, exheaderCounter );
+				}
 			}
 
 			if ( ExeFsSize > 0 ) {
-				byte[] exefsCounter = GetCounter( 2, ncsd.MediaunitSize );
-				ExeFs = new ExeFsReader( stream, exeFsOffset, ncsd, this, keys, encryption, exefsCounter );
+				using ( DuplicatableStream exeFsStream = new PartialStream( Stream, exeFsOffset, ExeFsSize * ncsd.MediaunitSize ) ) {
+					byte[] exefsCounter = GetCounter( 2, ncsd.MediaunitSize );
+					ExeFs = new ExeFsReader( exeFsStream, ncsd, this, keys, encryption, exefsCounter );
+				}
 			}
 
 			return;

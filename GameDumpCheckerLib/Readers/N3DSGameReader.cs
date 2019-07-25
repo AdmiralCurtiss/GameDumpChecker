@@ -1,5 +1,6 @@
 ﻿using GameDumpCheckerLib.Gamecube;
 using GameDumpCheckerLib.N3DS;
+using HyoutaUtils.Streams;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ namespace GameDumpCheckerLib.Readers {
 
 		public N3DSGameReader( string filename ) {
 			Filename = filename;
-			using ( var stream = new FileStream( Filename, FileMode.Open ) ) {
+			using ( var stream = new DuplicatableFileStream( Filename ) ) {
 				CCI = new NcsdReader( stream, Keys );
 			}
 		}

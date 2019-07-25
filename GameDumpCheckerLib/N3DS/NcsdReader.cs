@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HyoutaPluginBase;
 using HyoutaUtils;
+using HyoutaUtils.Streams;
 
 namespace GameDumpCheckerLib.N3DS {
 	public class NcsdPartitionGeometry {
@@ -13,6 +10,8 @@ namespace GameDumpCheckerLib.N3DS {
 	}
 
 	public class NcsdReader {
+		public DuplicatableStream Stream;
+
 		public uint MediaSize;
 		public ulong MediaId;
 		public NcsdPartitionGeometry[] PartitionGeometry;
@@ -26,7 +25,9 @@ namespace GameDumpCheckerLib.N3DS {
 			}
 		}
 
-		public NcsdReader( Stream stream, KeyProvider keys ) {
+		public NcsdReader( DuplicatableStream stream, KeyProvider keys ) {
+			Stream = stream.Duplicate();
+
 			stream.Position = 0x100;
 			if ( stream.ReadAscii( 4 ) != "NCSD" ) {
 				throw new Exception( "wrong magic for 3DS" );
@@ -53,7 +54,9 @@ namespace GameDumpCheckerLib.N3DS {
 			Partitions = new NcchReader[8];
 			for ( int i = 0; i < 8; ++i ) {
 				if ( PartitionGeometry[i].Size > 0 ) {
-					Partitions[i] = new NcchReader( stream, PartitionGeometry[i].Offset * MediaunitSize, this, keys );
+					using ( DuplicatableStream ncchStream = new PartialStream( Stream, PartitionGeometry[i].Offset * MediaunitSize, PartitionGeometry[i].Size * MediaunitSize ) ) {
+						Partitions[i] = new NcchReader( ncchStream, this, keys );
+					}
 				}
 			}
 
