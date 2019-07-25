@@ -1,4 +1,6 @@
 ﻿using GameDumpCheckerLib.Gamecube;
+using HyoutaPluginBase;
+using HyoutaUtils.Streams;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +13,7 @@ namespace GameDumpCheckerLib.Readers {
 
         public GamecubeGameReader( string filename ) {
             Filename = filename;
-            using ( var stream = new FileStream( Filename, FileMode.Open ) ) {
+            using ( var stream = new DuplicatableFileStream( Filename ) ) {
                 Iso = new IsoReader( stream );
                 Banners = new List<(string path, Banner banner)>();
                 ParseBanners( Banners, Iso.Fst.Root.GetChildren(), stream, Iso );
@@ -122,7 +124,7 @@ namespace GameDumpCheckerLib.Readers {
             return sections;
         }
 
-        private static void ParseBanners( List<(string path, Banner banner)> banners, List<FstEntry> entries, Stream stream, IsoReader iso, string path = "" ) {
+        private static void ParseBanners( List<(string path, Banner banner)> banners, List<FstEntry> entries, DuplicatableStream stream, IsoReader iso, string path = "" ) {
             foreach ( FstEntry entry in entries ) {
                 bool possiblyBanner = entry is FstFileEntry && entry.Filename.EndsWith( ".bnr" );
                 if ( possiblyBanner ) {

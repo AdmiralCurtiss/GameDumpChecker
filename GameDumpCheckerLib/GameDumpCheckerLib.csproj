@@ -58,7 +58,6 @@
     <Compile Include="Gamecube\DiskHeaderInformation.cs" />
     <Compile Include="Gamecube\Fst.cs" />
     <Compile Include="Gamecube\IsoReader.cs" />
-    <Compile Include="PartialStream.cs" />
     <Compile Include="PlayStation\Sfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Readers\GamecubeGameReader.cs" />
