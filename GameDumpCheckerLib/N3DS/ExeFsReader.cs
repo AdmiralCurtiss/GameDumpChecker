@@ -52,7 +52,7 @@ namespace GameDumpCheckerLib.N3DS {
 			if ( encryption != NcchReader.EncryptionType.None ) {
 				byte[] counter = new byte[initialCounter.Length];
 				initialCounter.CopyTo( counter, 0 );
-				Encryption.AddToCounter( counter, offsetInExefs / 0x10 );
+				Encryption.AddToCounterInPlace( counter, offsetInExefs / 0x10 );
 				var key = section.Name == "icon" || section.Name == "banner" ? ncch.Key0 : ncch.Key1;
 				data = Encryption.Decrypt( data, key, counter );
 			}

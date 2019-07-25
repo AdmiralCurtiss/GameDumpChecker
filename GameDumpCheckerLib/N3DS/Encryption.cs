@@ -25,7 +25,7 @@ namespace GameDumpCheckerLib.N3DS {
 							--remainingBytes;
 						}
 
-						AddToCounter( counter, 1 );
+						AddToCounterInPlace( counter, 1 );
 					}
 					if ( remainingBytes > 0 ) {
 						enc.TransformBlock( new byte[16], 0, 16, tmp, 0 );
@@ -40,7 +40,16 @@ namespace GameDumpCheckerLib.N3DS {
 			return output;
 		}
 
-		public static void AddToCounter( byte[] counter, uint block_num ) {
+		public static byte[] AddToCounter( byte[] counter, uint block_num ) {
+			byte[] rv = new byte[16];
+			for ( int i = 0; i < 16; ++i ) {
+				rv[i] = counter[i];
+			}
+			AddToCounterInPlace( rv, block_num );
+			return rv;
+		}
+
+		public static void AddToCounterInPlace( byte[] counter, uint block_num ) {
 			uint[] ctr = new uint[4];
 			ctr[3] = BitConverter.ToUInt32( counter, 0 );
 			ctr[2] = BitConverter.ToUInt32( counter, 4 );
