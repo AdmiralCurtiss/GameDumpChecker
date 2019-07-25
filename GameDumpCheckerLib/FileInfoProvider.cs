@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HyoutaUtils.Streams;
 
 namespace GameDumpCheckerLib {
     public static class FileInfoProvider {
         public static DataSection GetDataForFile( string filename ) {
             var data = new List<(string Key, string Value)>();
 
-            using ( Stream s = new System.IO.FileStream( filename, FileMode.Open ) ) {
+            using ( Stream s = new DuplicatableFileStream( filename ) ) {
                 data.Add( ("Filename", System.IO.Path.GetFileName( filename )) );
                 data.Add( ("Filesize", s.Length + " bytes") );
                 Console.WriteLine( "Calculating CRC32 of " + filename );
