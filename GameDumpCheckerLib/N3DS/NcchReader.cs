@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using HyoutaPluginBase;
 using HyoutaUtils;
 using HyoutaUtils.Streams;
@@ -11,7 +12,7 @@ namespace GameDumpCheckerLib.N3DS {
 			Secure,
 		}
 
-		public DuplicatableStream Stream;
+		public DuplicatableStream DecryptedStream;
 
 		public byte[] Signature;
 		public uint ContentSize;
@@ -32,8 +33,11 @@ namespace GameDumpCheckerLib.N3DS {
 		public ExeFsReader ExeFs;
 		public RomFsReader RomFs;
 
-		public NcchReader( DuplicatableStream stream, NcsdReader ncsd, KeyProvider keys ) {
-			Stream = stream.Duplicate();
+		public NcchReader( DuplicatableStream ncchstream, NcsdReader ncsd, KeyProvider keys ) {
+			List<(long offset, long size, DuplicatableStream substream)> l = new List<(long offset, long size, DuplicatableStream substream)>();
+
+			DuplicatableStream stream = new PartialStream( ncchstream, 0, 0x200 );
+			l.Add( (0, 0x200, stream) );
 
 			Signature = new byte[0x100];
 			stream.Read( Signature, 0, Signature.Length );
@@ -114,25 +118,30 @@ namespace GameDumpCheckerLib.N3DS {
 			}
 
 			if ( ExtendedHeaderSize > 0 ) {
-				using ( DuplicatableStream exHeaderStream = new PartialStream( Stream, exheaderOffset, ExtendedHeaderSize ) ) {
+				using ( DuplicatableStream exHeaderStream = new PartialStream( ncchstream, exheaderOffset, ExtendedHeaderSize ) ) {
 					byte[] exheaderCounter = GetCounter( 1, ncsd.MediaunitSize );
 					ExHeader = new ExHeaderReader( exHeaderStream, ncsd, this, keys, encryption, exheaderCounter );
+					l.Add( (exheaderOffset, ExHeader.DecryptedStream.Length, ExHeader.DecryptedStream) );
 				}
 			}
 
 			if ( ExeFsSize > 0 ) {
-				using ( DuplicatableStream exeFsStream = new PartialStream( Stream, exeFsOffset, ExeFsSize * ncsd.MediaunitSize ) ) {
+				using ( DuplicatableStream exeFsStream = new PartialStream( ncchstream, exeFsOffset, ExeFsSize * ncsd.MediaunitSize ) ) {
 					byte[] exefsCounter = GetCounter( 2, ncsd.MediaunitSize );
 					ExeFs = new ExeFsReader( exeFsStream, ncsd, this, keys, encryption, exefsCounter );
+					l.Add( (exeFsOffset, ExeFs.DecryptedStream.Length, ExeFs.DecryptedStream) );
 				}
 			}
 
 			if ( RomFsSize > 0 ) {
-				using ( DuplicatableStream romFsStream = new PartialStream( Stream, romFsOffset, RomFsSize * ncsd.MediaunitSize ) ) {
+				using ( DuplicatableStream romFsStream = new PartialStream( ncchstream, romFsOffset, RomFsSize * ncsd.MediaunitSize ) ) {
 					byte[] romfsCounter = GetCounter( 3, ncsd.MediaunitSize );
 					RomFs = new RomFsReader( romFsStream, ncsd, this, keys, encryption, romfsCounter );
+					l.Add( (romFsOffset, RomFs.DecryptedStream.Length, RomFs.DecryptedStream) );
 				}
 			}
+
+			DecryptedStream = EncryptedStreamConcat.MergePartiallyEncryptedStreams( ncchstream, l );
 
 			return;
 		}
