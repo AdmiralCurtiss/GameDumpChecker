@@ -1,7 +1,9 @@
 ﻿using System;
-using System.IO;
-using System.Text;
+using System.Collections.Generic;
+using System.Linq;
 using HyoutaPluginBase;
+using HyoutaUtils;
+using HyoutaUtils.Streams;
 
 namespace GameDumpCheckerLib.N3DS {
 	public class ExeFsReader {
@@ -12,52 +14,40 @@ namespace GameDumpCheckerLib.N3DS {
 			public byte[] Hash;
 		}
 
-		public DuplicatableStream Stream;
+		public DuplicatableStream DecryptedStream;
 
 		public ExeFsSection[] Sections = new ExeFsSection[8];
 		public SmdhReader Icon;
 
 		public ExeFsReader( DuplicatableStream stream, NcsdReader ncsd, NcchReader ncch, KeyProvider keys, NcchReader.EncryptionType encryption, byte[] counter ) {
-			Stream = stream.Duplicate();
-
-			var data = new byte[0x200];
-			stream.Read( data, 0, data.Length );
-
+			DuplicatableStream header = new PartialStream( stream, 0, 0x200 );
 			if ( encryption != NcchReader.EncryptionType.None ) {
-				data = Encryption.Decrypt( data, ncch.Key0, counter );
+				header = new EncryptedStream( header, ncch.Key0, counter );
 			}
 
+			List<(long offset, long size, DuplicatableStream substream)> l = new List<(long offset, long size, DuplicatableStream substream)>();
+			l.Add( (0, 0x200, header) );
 			for ( int i = 0; i < 8; ++i ) {
-				Sections[i] = new ExeFsSection() {
-					Name = Encoding.ASCII.GetString( data, i * 0x10 + 0, 8 ).TrimEnd( '\0' ),
-					Offset = BitConverter.ToUInt32( data, i * 0x10 + 8 ),
-					Size = BitConverter.ToUInt32( data, i * 0x10 + 12 )
-				};
-				Sections[i].Hash = new byte[0x20];
-				Array.Copy( data, 0x100 + ( 7 - i ) * 0x20, Sections[i].Hash, 0, 0x20 );
+				string name = header.ReadAscii( 8 ).TrimNull();
+				uint offset = header.ReadUInt32();
+				uint size = header.ReadUInt32();
+				if ( size > 0 ) {
+					uint alignedSize = size.Align( 0x100 );
+					uint offsetInExefs = offset + 0x200;
+					DuplicatableStream substream = new PartialStream( stream, offsetInExefs, alignedSize );
+					if ( encryption != NcchReader.EncryptionType.None ) {
+						var key = name == "icon" || name == "banner" ? ncch.Key0 : ncch.Key1;
+						substream = new EncryptedStream( substream, key, Encryption.AddToCounter( counter, offsetInExefs / 0x10 ) );
+					}
+					l.Add( (offsetInExefs, alignedSize, substream) );
 
-				if ( Sections[i].Name == "icon" ) {
-					var bytes = ExtractFile( stream, Sections[i], ncch, encryption, counter );
-					Icon = new SmdhReader( new MemoryStream( bytes ) );
+					if ( name == "icon" ) {
+						Icon = new SmdhReader( substream.Duplicate() );
+					}
 				}
 			}
-		}
 
-		public byte[] ExtractFile( Stream stream, ExeFsSection section, NcchReader ncch, NcchReader.EncryptionType encryption, byte[] initialCounter ) {
-			uint offsetInExefs = section.Offset + 0x200;
-			byte[] data = new byte[section.Size];
-			stream.Position = offsetInExefs;
-			stream.Read( data, 0, data.Length );
-
-			if ( encryption != NcchReader.EncryptionType.None ) {
-				byte[] counter = new byte[initialCounter.Length];
-				initialCounter.CopyTo( counter, 0 );
-				Encryption.AddToCounterInPlace( counter, offsetInExefs / 0x10 );
-				var key = section.Name == "icon" || section.Name == "banner" ? ncch.Key0 : ncch.Key1;
-				data = Encryption.Decrypt( data, key, counter );
-			}
-
-			return data;
+			DecryptedStream = EncryptedStreamConcat.MergePartiallyEncryptedStreams( stream, l );
 		}
 	}
 }
