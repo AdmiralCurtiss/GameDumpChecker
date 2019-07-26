@@ -28,7 +28,7 @@ namespace GameDumpCheckerLib.N3DS {
 						AddToCounterInPlace( counter, 1 );
 					}
 					if ( remainingBytes > 0 ) {
-						enc.TransformBlock( new byte[16], 0, 16, tmp, 0 );
+						enc.TransformBlock( counter, 0, 16, tmp, 0 );
 						for ( int i = 0; i < remainingBytes; ++i ) {
 							output[position] = (byte)( tmp[i] ^ data[position] );
 							++position;

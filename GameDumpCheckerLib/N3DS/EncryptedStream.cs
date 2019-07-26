@@ -91,14 +91,8 @@ namespace GameDumpCheckerLib.N3DS {
 		}
 
 		private void RecalculateXorPad( ulong blockNum ) {
-			if ( blockNum < (ulong)( Length / 16 ) ) {
-				InitialCounter.CopyTo( Counter, 0 );
-				Encryption.AddToCounterInPlace( Counter, (uint)blockNum );
-			} else {
-				for ( int i = 0; i < 16; ++i ) {
-					Counter[i] = 0;
-				}
-			}
+			InitialCounter.CopyTo( Counter, 0 );
+			Encryption.AddToCounterInPlace( Counter, (uint)blockNum );
 			AesEncryptor.TransformBlock( Counter, 0, 16, XorPad, 0 );
 			XorPadBlockNumber = blockNum;
 		}
