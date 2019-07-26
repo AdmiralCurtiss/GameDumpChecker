@@ -21,7 +21,11 @@ namespace GameDumpCheckerLib.N3DS {
 		public ushort Version;
 		public string ProductCode;
 		public uint ExtendedHeaderSize;
-		public ulong Flags;
+		public byte[] Flags;
+		public uint PlainRegionOffset;
+		public uint PlainRegionSize;
+		public uint LogoOffset;
+		public uint LogoSize;
 		public uint ExeFsOffset;
 		public uint ExeFsSize;
 		public uint RomFsOffset;
@@ -58,11 +62,11 @@ namespace GameDumpCheckerLib.N3DS {
 			stream.DiscardBytes( 0x20 );
 			ExtendedHeaderSize = stream.ReadUInt32();
 			stream.DiscardBytes( 4 );
-			Flags = stream.ReadUInt64();
-			stream.DiscardBytes( 4 );
-			stream.DiscardBytes( 4 );
-			stream.DiscardBytes( 4 );
-			stream.DiscardBytes( 4 );
+			Flags = stream.ReadBytes( 8 );
+			PlainRegionOffset = stream.ReadUInt32();
+			PlainRegionSize = stream.ReadUInt32();
+			LogoOffset = stream.ReadUInt32();
+			LogoSize = stream.ReadUInt32();
 			ExeFsOffset = stream.ReadUInt32();
 			ExeFsSize = stream.ReadUInt32();
 			stream.DiscardBytes( 4 );
@@ -75,13 +79,15 @@ namespace GameDumpCheckerLib.N3DS {
 			stream.DiscardBytes( 0x20 );
 
 			long exheaderOffset = 0x200;
+			long plainRegionOffset = PlainRegionOffset * ncsd.MediaunitSize;
+			long logoOffset = LogoOffset * ncsd.MediaunitSize;
 			long exeFsOffset = ExeFsOffset * ncsd.MediaunitSize;
 			long romFsOffset = RomFsOffset * ncsd.MediaunitSize;
 			EncryptionType encryption;
 
-			bool isEncrypted = ( Flags & 4 ) == 0;
+			bool isEncrypted = ( Flags[7] & 4 ) == 0;
 			if ( isEncrypted ) {
-				bool fixedKeyCrypto = ( Flags & 1 ) > 0;
+				bool fixedKeyCrypto = ( Flags[7] & 1 ) > 0;
 				if ( fixedKeyCrypto ) {
 					Console.WriteLine( "Fixed key crypto not implemented." );
 					encryption = EncryptionType.Fixed;
@@ -91,7 +97,7 @@ namespace GameDumpCheckerLib.N3DS {
 					Array.Copy( Signature, key0y, 0x10 );
 
 					byte[] key1x = null;
-					switch ( ( Flags & 0x000000FF00000000ul ) >> 32 ) {
+					switch ( Flags[3] ) {
 						case 0: key1x = keys.Slot0x2CKeyX; break;
 						case 1: key1x = keys.Slot0x25KeyX; break;
 						case 10: key1x = keys.Slot0x18KeyX; break;
@@ -100,7 +106,7 @@ namespace GameDumpCheckerLib.N3DS {
 					}
 
 					byte[] key1y = null;
-					bool usesSeed = ( Flags & 0x20 ) > 0;
+					bool usesSeed = ( Flags[7] & 0x20 ) > 0;
 					if ( usesSeed ) {
 						Console.WriteLine( "Seed crypto not implemented." );
 						return;
