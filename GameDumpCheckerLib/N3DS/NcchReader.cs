@@ -30,6 +30,7 @@ namespace GameDumpCheckerLib.N3DS {
 
 		public ExHeaderReader ExHeader;
 		public ExeFsReader ExeFs;
+		public RomFsReader RomFs;
 
 		public NcchReader( DuplicatableStream stream, NcsdReader ncsd, KeyProvider keys ) {
 			Stream = stream.Duplicate();
@@ -71,6 +72,7 @@ namespace GameDumpCheckerLib.N3DS {
 
 			long exheaderOffset = 0x200;
 			long exeFsOffset = ExeFsOffset * ncsd.MediaunitSize;
+			long romFsOffset = RomFsOffset * ncsd.MediaunitSize;
 			EncryptionType encryption;
 
 			bool isEncrypted = ( Flags & 4 ) == 0;
@@ -122,6 +124,13 @@ namespace GameDumpCheckerLib.N3DS {
 				using ( DuplicatableStream exeFsStream = new PartialStream( Stream, exeFsOffset, ExeFsSize * ncsd.MediaunitSize ) ) {
 					byte[] exefsCounter = GetCounter( 2, ncsd.MediaunitSize );
 					ExeFs = new ExeFsReader( exeFsStream, ncsd, this, keys, encryption, exefsCounter );
+				}
+			}
+
+			if ( RomFsSize > 0 ) {
+				using ( DuplicatableStream romFsStream = new PartialStream( Stream, romFsOffset, RomFsSize * ncsd.MediaunitSize ) ) {
+					byte[] romfsCounter = GetCounter( 3, ncsd.MediaunitSize );
+					RomFs = new RomFsReader( romFsStream, ncsd, this, keys, encryption, romfsCounter );
 				}
 			}
 

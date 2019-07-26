@@ -53,6 +53,7 @@
     <Compile Include="Checksums\Internal.cs" />
     <Compile Include="FileInfoProvider.cs" />
     <Compile Include="DataSection.cs" />
+    <Compile Include="N3DS\RomFsReader.cs" />
     <Compile Include="N3DS\SmdhReader.cs" />
     <Compile Include="Readers\FileType.cs" />
     <Compile Include="Gamecube\Banner.cs" />
