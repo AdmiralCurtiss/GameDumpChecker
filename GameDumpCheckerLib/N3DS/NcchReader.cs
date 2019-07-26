@@ -135,7 +135,8 @@ namespace GameDumpCheckerLib.N3DS {
 			}
 
 			if ( ExtendedHeaderSize > 0 ) {
-				using ( DuplicatableStream exHeaderStream = new PartialStream( ncchstream, exheaderOffset, ExtendedHeaderSize ) ) {
+				// The hardcoded 0x800 here seems strange here. I wonder if there's a better logic for that?
+				using ( DuplicatableStream exHeaderStream = new PartialStream( ncchstream, exheaderOffset, 0x800 ) ) {
 					byte[] exheaderCounter = GetCounter( 1, ncsd.MediaunitSize );
 					ExHeader = new ExHeaderReader( exHeaderStream, ncsd, this, keys, encryption, exheaderCounter );
 					l.Add( (exheaderOffset, ExHeader.DecryptedStream.Length, ExHeader.DecryptedStream) );
