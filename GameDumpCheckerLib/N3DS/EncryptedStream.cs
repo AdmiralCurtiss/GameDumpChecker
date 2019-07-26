@@ -66,7 +66,7 @@ namespace GameDumpCheckerLib.N3DS {
 			if ( bytesIntoCurrentBlock != 0 ) {
 				for ( ulong i = bytesIntoCurrentBlock; i < 16; ++i ) {
 					if ( bufferPosition < bytesRead ) {
-						buffer[bufferPosition] ^= XorPad[i];
+						buffer[bufferPosition + offset] ^= XorPad[i];
 						++bufferPosition;
 					} else {
 						return bytesRead;
@@ -79,7 +79,7 @@ namespace GameDumpCheckerLib.N3DS {
 			while ( true ) {
 				for ( ulong i = 0; i < 16; ++i ) {
 					if ( bufferPosition < bytesRead ) {
-						buffer[bufferPosition] ^= XorPad[i];
+						buffer[bufferPosition + offset] ^= XorPad[i];
 						++bufferPosition;
 					} else {
 						return bytesRead;
@@ -111,6 +111,10 @@ namespace GameDumpCheckerLib.N3DS {
 
 		public override void Write( byte[] buffer, int offset, int count ) {
 			throw new NotSupportedException();
+		}
+
+		public override string ToString() {
+			return "Encrypted " + BaseStream.ToString();
 		}
 	}
 }
