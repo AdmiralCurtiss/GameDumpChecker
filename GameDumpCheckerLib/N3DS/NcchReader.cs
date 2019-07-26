@@ -41,7 +41,6 @@ namespace GameDumpCheckerLib.N3DS {
 			List<(long offset, long size, DuplicatableStream substream)> l = new List<(long offset, long size, DuplicatableStream substream)>();
 
 			DuplicatableStream stream = new PartialStream( ncchstream, 0, 0x200 );
-			l.Add( (0, 0x200, stream) );
 
 			Signature = new byte[0x100];
 			stream.Read( Signature, 0, Signature.Length );
@@ -121,6 +120,18 @@ namespace GameDumpCheckerLib.N3DS {
 				}
 			} else {
 				encryption = EncryptionType.None;
+			}
+
+			if ( encryption != EncryptionType.None ) {
+				byte[] newFlags = new byte[8];
+				Flags.CopyTo( newFlags, 0 );
+				newFlags[3] = 0; // remove key index
+				newFlags[7] |= 4; // set decrypted bit
+				l.Add( (0, 0x188, new PartialStream( stream, 0, 0x188 )) );
+				l.Add( (0x188, 0x8, new DuplicatableByteArrayStream( newFlags )) );
+				l.Add( (0x190, 0x70, new PartialStream( stream, 0x190, 0x70 )) );
+			} else {
+				l.Add( (0, 0x200, stream) );
 			}
 
 			if ( ExtendedHeaderSize > 0 ) {
