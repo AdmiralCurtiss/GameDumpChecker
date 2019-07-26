@@ -27,6 +27,7 @@ namespace GameDumpCheckerLib.N3DS {
 
 			List<(long offset, long size, DuplicatableStream substream)> l = new List<(long offset, long size, DuplicatableStream substream)>();
 			l.Add( (0, 0x200, header) );
+			bool sameKeys = ncch.Key0.SequenceEqual( ncch.Key1 );
 			for ( int i = 0; i < 8; ++i ) {
 				string name = header.ReadAscii( 8 ).TrimNull();
 				uint offset = header.ReadUInt32();
@@ -36,8 +37,18 @@ namespace GameDumpCheckerLib.N3DS {
 					uint offsetInExefs = offset + 0x200;
 					DuplicatableStream substream = new PartialStream( stream, offsetInExefs, alignedSize );
 					if ( encryption != NcchReader.EncryptionType.None ) {
-						var key = name == "icon" || name == "banner" ? ncch.Key0 : ncch.Key1;
-						substream = new EncryptedStream( substream, key, Encryption.AddToCounter( counter, offsetInExefs / 0x10 ) );
+						if ( !sameKeys && !( name == "icon" || name == "banner" ) ) {
+							// file itself uses key1 but blank space between files uses key0, what a mess!
+							var unencryptedSubstream = substream;
+							substream = new EncryptedStream( substream, ncch.Key1, Encryption.AddToCounter( counter, offsetInExefs / 0x10 ) );
+							if ( alignedSize != size ) {
+								var k0s = new PartialStream( new EncryptedStream( unencryptedSubstream, ncch.Key0, Encryption.AddToCounter( counter, offsetInExefs / 0x10 ) ), size, alignedSize - size );
+								var k1s = new PartialStream( substream, 0, size );
+								substream = ConcatenatedStream.CreateConcatenatedStream( new List<DuplicatableStream>() { k1s, k0s } );
+							}
+						} else {
+							substream = new EncryptedStream( substream, ncch.Key0, Encryption.AddToCounter( counter, offsetInExefs / 0x10 ) );
+						}
 					}
 					l.Add( (offsetInExefs, alignedSize, substream) );
 
@@ -47,7 +58,7 @@ namespace GameDumpCheckerLib.N3DS {
 				}
 			}
 
-			DecryptedStream = EncryptedStreamConcat.MergePartiallyEncryptedStreams( stream, l );
+			DecryptedStream = EncryptedStreamConcat.MergePartiallyEncryptedStreams( new EncryptedStream( stream, ncch.Key0, counter ), l );
 		}
 	}
 }
