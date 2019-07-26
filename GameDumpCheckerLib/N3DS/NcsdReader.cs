@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using HyoutaPluginBase;
 using HyoutaUtils;
 using HyoutaUtils.Streams;
@@ -10,7 +11,7 @@ namespace GameDumpCheckerLib.N3DS {
 	}
 
 	public class NcsdReader {
-		public DuplicatableStream Stream;
+		public DuplicatableStream DecryptedStream;
 
 		public uint MediaSize;
 		public ulong MediaId;
@@ -25,9 +26,8 @@ namespace GameDumpCheckerLib.N3DS {
 			}
 		}
 
-		public NcsdReader( DuplicatableStream stream, KeyProvider keys ) {
-			Stream = stream.Duplicate();
-
+		public NcsdReader( DuplicatableStream ncsdstream, KeyProvider keys ) {
+			DuplicatableStream stream = ncsdstream.Duplicate();
 			stream.Position = 0x100;
 			if ( stream.ReadAscii( 4 ) != "NCSD" ) {
 				throw new Exception( "wrong magic for 3DS" );
@@ -51,14 +51,18 @@ namespace GameDumpCheckerLib.N3DS {
 				Flags[i] = stream.ReadUInt8();
 			}
 
+			List<(long offset, long size, DuplicatableStream substream)> l = new List<(long offset, long size, DuplicatableStream substream)>();
 			Partitions = new NcchReader[8];
 			for ( int i = 0; i < 8; ++i ) {
 				if ( PartitionGeometry[i].Size > 0 ) {
-					using ( DuplicatableStream ncchStream = new PartialStream( Stream, PartitionGeometry[i].Offset * MediaunitSize, PartitionGeometry[i].Size * MediaunitSize ) ) {
+					using ( DuplicatableStream ncchStream = new PartialStream( ncsdstream, PartitionGeometry[i].Offset * MediaunitSize, PartitionGeometry[i].Size * MediaunitSize ) ) {
 						Partitions[i] = new NcchReader( ncchStream, this, keys );
+						l.Add( (PartitionGeometry[i].Offset * MediaunitSize, Partitions[i].DecryptedStream.Length, Partitions[i].DecryptedStream) );
 					}
 				}
 			}
+
+			DecryptedStream = EncryptedStreamConcat.MergePartiallyEncryptedStreams( ncsdstream, l );
 
 			return;
 		}
