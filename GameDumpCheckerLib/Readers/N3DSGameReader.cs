@@ -27,6 +27,12 @@ namespace GameDumpCheckerLib.Readers {
 			List<DataSection> sections = new List<DataSection>();
 
 			{
+				var decrypt = new List<(string Key, string Value)>();
+				FileInfoProvider.CalculateHashes( decrypt, CCI.DecryptedStream );
+				sections.Add( new DataSection( "Decrypted Hashes", decrypt ) );
+			}
+
+			{
 				var gameData = new List<(string Key, string Value)>();
 				gameData.Add( ("Media Size", ( CCI.MediaSize * CCI.MediaunitSize ).ToString( "D" ) + " bytes") );
 				gameData.Add( ("Media ID", CCI.MediaId.ToString( "X16" )) );
