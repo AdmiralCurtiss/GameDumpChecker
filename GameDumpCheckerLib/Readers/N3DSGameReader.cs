@@ -28,7 +28,7 @@ namespace GameDumpCheckerLib.Readers {
 
 			{
 				var decrypt = new List<(string Key, string Value)>();
-				FileInfoProvider.CalculateHashes( decrypt, CCI.DecryptedStream );
+				FileInfoProvider.CalculateHashes( decrypt, CCI.DecryptedStream, " (decrypted)" );
 				sections.Add( new DataSection( "Decrypted Hashes", decrypt ) );
 			}
 
@@ -43,7 +43,9 @@ namespace GameDumpCheckerLib.Readers {
 				NcchReader ncch = CCI.Partitions[i];
 				if ( ncch != null ) {
 					var gameData = new List<(string Key, string Value)>();
-					gameData.Add( ("Content Size", ( ncch.ContentSize * CCI.MediaunitSize ).ToString( "D" ) + " bytes") );
+					gameData.Add( ("Starts at offset", "0x" + CCI.GetPartitionOffset( i ).ToString( "X" )) );
+					gameData.Add( ("Ends at offset", "0x" + ( CCI.GetPartitionOffset( i ) + CCI.GetPartitionLength( i ) ).ToString( "X" )) );
+					gameData.Add( ("Partition Size", CCI.GetPartitionLength( i ).ToString( "D" ) + " bytes") );
 					gameData.Add( ("Title ID", ncch.TitleId.ToString( "X16" )) );
 					gameData.Add( ("Product Code", ncch.ProductCode.TrimEnd( '\0' )) );
 					if ( ncch.ExHeader != null ) {
@@ -59,7 +61,9 @@ namespace GameDumpCheckerLib.Readers {
 							}
 						}
 					}
-					sections.Add( new DataSection( "Game Data (NCCH Header / Partition " + i + ")", gameData ) );
+					FileInfoProvider.CalculateHashes( gameData, ncch.EncryptedStream, " (encrypted)" );
+					FileInfoProvider.CalculateHashes( gameData, ncch.DecryptedStream, " (decrypted)" );
+					sections.Add( new DataSection( "Game Data (NCCH / Partition " + i + ")", gameData ) );
 				}
 			}
 

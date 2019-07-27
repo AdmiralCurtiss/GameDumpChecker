@@ -12,6 +12,7 @@ namespace GameDumpCheckerLib.N3DS {
 			Secure,
 		}
 
+		public DuplicatableStream EncryptedStream;
 		public DuplicatableStream DecryptedStream;
 
 		public byte[] Signature;
@@ -38,8 +39,8 @@ namespace GameDumpCheckerLib.N3DS {
 		public RomFsReader RomFs;
 
 		public NcchReader( DuplicatableStream ncchstream, NcsdReader ncsd, KeyProvider keys ) {
+			EncryptedStream = ncchstream.Duplicate();
 			List<(long offset, long size, DuplicatableStream substream)> l = new List<(long offset, long size, DuplicatableStream substream)>();
-
 			DuplicatableStream stream = new PartialStream( ncchstream, 0, 0x200 );
 
 			Signature = new byte[0x100];

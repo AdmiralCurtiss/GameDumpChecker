@@ -25,6 +25,12 @@ namespace GameDumpCheckerLib.N3DS {
 				return 1L << ( 9 + Flags[6] );
 			}
 		}
+		public long GetPartitionOffset( int i ) {
+			return PartitionGeometry[i].Offset * MediaunitSize;
+		}
+		public long GetPartitionLength( int i ) {
+			return PartitionGeometry[i].Size * MediaunitSize;
+		}
 
 		public NcsdReader( DuplicatableStream ncsdstream, KeyProvider keys ) {
 			DuplicatableStream stream = ncsdstream.Duplicate();
@@ -55,9 +61,9 @@ namespace GameDumpCheckerLib.N3DS {
 			Partitions = new NcchReader[8];
 			for ( int i = 0; i < 8; ++i ) {
 				if ( PartitionGeometry[i].Size > 0 ) {
-					using ( DuplicatableStream ncchStream = new PartialStream( ncsdstream, PartitionGeometry[i].Offset * MediaunitSize, PartitionGeometry[i].Size * MediaunitSize ) ) {
+					using ( DuplicatableStream ncchStream = new PartialStream( ncsdstream, GetPartitionOffset( i ), GetPartitionLength( i ) ) ) {
 						Partitions[i] = new NcchReader( ncchStream, this, keys );
-						l.Add( (PartitionGeometry[i].Offset * MediaunitSize, Partitions[i].DecryptedStream.Length, Partitions[i].DecryptedStream) );
+						l.Add( (GetPartitionOffset( i ), Partitions[i].DecryptedStream.Length, Partitions[i].DecryptedStream) );
 					}
 				}
 			}

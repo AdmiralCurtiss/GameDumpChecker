@@ -11,22 +11,22 @@ namespace GameDumpCheckerLib {
 				data.Add( ("Filename", Path.GetFileName( filename )) );
 				data.Add( ("Filesize", s.Length + " bytes") );
 				Console.WriteLine( "Calculating Hashes of " + filename );
-				CalculateHashes( data, s );
+				CalculateHashes( data, s, "" );
 				return new DataSection( "File Info", data );
 			}
 		}
 
-		public static void CalculateHashes( List<(string Key, string Value)> data, Stream s ) {
+		public static void CalculateHashes( List<(string Key, string Value)> data, Stream s, string postfix ) {
 			Console.WriteLine( "Calculating CRC32..." );
-			data.Add( ("CRC32", Util.ByteArrayToHumanReadableHexString( Checksums.CRC32.CalculateCRC32( s ) )) );
+			data.Add( ("CRC32" + postfix, Util.ByteArrayToHumanReadableHexString( Checksums.CRC32.CalculateCRC32( s ) )) );
 			Console.WriteLine( "Calculating MD5..." );
-			data.Add( ("MD5", Util.ByteArrayToHumanReadableHexString( Checksums.Internal.CalculateMD5( s ) )) );
+			data.Add( ("MD5" + postfix, Util.ByteArrayToHumanReadableHexString( Checksums.Internal.CalculateMD5( s ) )) );
 			Console.WriteLine( "Calculating SHA1..." );
-			data.Add( ("SHA1", Util.ByteArrayToHumanReadableHexString( Checksums.Internal.CalculateSHA1( s ) )) );
+			data.Add( ("SHA1" + postfix, Util.ByteArrayToHumanReadableHexString( Checksums.Internal.CalculateSHA1( s ) )) );
 			Console.WriteLine( "Calculating SHA256..." );
-			data.Add( ("SHA256", Util.ByteArrayToHumanReadableHexString( Checksums.Internal.CalculateSHA256( s ) )) );
+			data.Add( ("SHA256" + postfix, Util.ByteArrayToHumanReadableHexString( Checksums.Internal.CalculateSHA256( s ) )) );
 			Console.WriteLine( "Calculating SHA512..." );
-			data.Add( ("SHA512", Util.ByteArrayToHumanReadableHexString( Checksums.Internal.CalculateSHA512( s ) )) );
+			data.Add( ("SHA512" + postfix, Util.ByteArrayToHumanReadableHexString( Checksums.Internal.CalculateSHA512( s ) )) );
 		}
 	}
 }
