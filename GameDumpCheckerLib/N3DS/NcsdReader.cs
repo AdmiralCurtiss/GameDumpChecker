@@ -20,6 +20,9 @@ namespace GameDumpCheckerLib.N3DS {
 
 		public NcchReader[] Partitions;
 
+		public ushort TitleVersion;
+		public ushort CardRevision;
+
 		public long MediaunitSize {
 			get {
 				return 1L << ( 9 + Flags[6] );
@@ -34,14 +37,17 @@ namespace GameDumpCheckerLib.N3DS {
 
 		public NcsdReader( DuplicatableStream ncsdstream, KeyProvider keys ) {
 			DuplicatableStream stream = ncsdstream.Duplicate();
-			stream.Position = 0x100;
+			stream.Position = 0;
+			byte[] signature = stream.ReadBytes( 0x100 );
+
 			if ( stream.ReadAscii( 4 ) != "NCSD" ) {
 				throw new Exception( "wrong magic for 3DS" );
 			}
 
 			MediaSize = stream.ReadUInt32();
 			MediaId = stream.ReadUInt64();
-			stream.DiscardBytes( 16 );
+			byte[] partitionFsType = stream.ReadBytes( 8 );
+			byte[] partitionCryptType = stream.ReadBytes( 8 );
 			PartitionGeometry = new NcsdPartitionGeometry[8];
 			for ( int i = 0; i < 8; ++i ) {
 				PartitionGeometry[i] = new NcsdPartitionGeometry();
@@ -49,13 +55,19 @@ namespace GameDumpCheckerLib.N3DS {
 				PartitionGeometry[i].Size = stream.ReadUInt32();
 			}
 
-			stream.DiscardBytes( 0x20 );
-			stream.DiscardBytes( 4 );
-			stream.DiscardBytes( 4 );
-			Flags = new byte[8];
-			for ( int i = 0; i < 8; ++i ) {
-				Flags[i] = stream.ReadUInt8();
+			byte[] extendedHeaderHash = stream.ReadBytes( 0x20 );
+			uint additionalHeaderSize = stream.ReadUInt32();
+			uint sectorZeroOffset = stream.ReadUInt32();
+			Flags = stream.ReadBytes( 8 );
+			ulong[] titleIds = new ulong[8];
+			for (int i = 0; i < 8; ++i ) {
+				titleIds[i] = stream.ReadUInt64();
 			}
+			byte[] reserved = stream.ReadBytes( 0x30 );
+
+			stream.Position = 0x310;
+			TitleVersion = stream.ReadUInt16();
+			CardRevision = stream.ReadUInt16();
 
 			List<(long offset, long size, DuplicatableStream substream)> l = new List<(long offset, long size, DuplicatableStream substream)>();
 			Partitions = new NcchReader[8];
