@@ -34,7 +34,7 @@ namespace GameDumpCheckerLib.Readers {
 
 			{
 				var gameData = new List<(string Key, string Value)>();
-				gameData.Add( ("Media Size", ( CCI.MediaSize * CCI.MediaunitSize ).ToString( "D" ) + " bytes") );
+				gameData.Add( ("Media Size", Util.FormatByteCountForOutput( CCI.MediaSize * CCI.MediaunitSize )) );
 				gameData.Add( ("Media ID", CCI.MediaId.ToString( "X16" )) );
 				gameData.Add( ("Card Revision", "0x" + CCI.CardRevision.ToString( "X4" )) );
 				sections.Add( new DataSection( "Game Data (NCSD Header)", gameData ) );

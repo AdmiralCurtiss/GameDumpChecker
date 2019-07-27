@@ -9,7 +9,7 @@ namespace GameDumpCheckerLib {
 			using ( Stream s = new DuplicatableFileStream( filename ) ) {
 				var data = new List<(string Key, string Value)>();
 				data.Add( ("Filename", Path.GetFileName( filename )) );
-				data.Add( ("Filesize", s.Length + " bytes") );
+				data.Add( ("Filesize", Util.FormatByteCountForOutput( s.Length )) );
 				Console.WriteLine( "Calculating Hashes of " + filename );
 				CalculateHashes( data, s, "" );
 				return new DataSection( "File Info", data );
